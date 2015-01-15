@@ -1,0 +1,92 @@
+use bim;
+
+
+///////////////Untuk report Corporate Pie chart ////////////////////////
+SELECT year(t.tanggal) as tahun,
+	MONTH(t.tanggal) as bulan, 
+	t.Category,
+	t.Company, 
+	t.Corporate, 
+	SUM(t.counter_id) as counter_id 
+from (
+	select 
+		ui.id ,isc.name as Client, 
+		c.name as Category,uc.name as Company ,
+		ucb.name as Corporate,
+		t.name as Tone,m.name as Media,isp.tanggal,
+		1 as counter_id
+		from input_summary isp
+		left join user_company uc on isp.user_company_id = uc.id
+		left join user_company_branch ucb on isp.user_company_branch_id = ucb.id
+		left join user_division ud on isp.user_division_id  = ud.id
+		left join category c on isp.category = c.id
+		left join tone t on isp.tone= t.id
+		left join media m on isp.media = m.id
+		left join user_info_client isc on isp.user_client =isc.id
+		left join user_info ui on isc.user_info_id = ui.id
+		where 
+			isp.status='Publish' 
+			and year(isp.tanggal) = 2014
+			and MONTH(isp.tanggal) =12 
+			and ui.id = '201412190000001'
+	
+      ) t                  
+GROUP BY 
+	year(tanggal),
+	MONTH(tanggal), 
+	Category,
+	Company,
+	Corporate
+ORDER BY Corporate, bulan  ASC
+
+
+
+select ui.id, ui.name ,uic.id , uic.name from user_info ui
+	inner join user_info_client uic on ui.id = uic.user_info_id
+
+select isp.user_client from input_summary isp
+	where user_i
+
+
+
+	/////////////////////////////////report generator/////////////////////
+	
+	select 
+		isp.no,
+		datename(DAY,isp.tanggal) + '-' + datename(MONTH,isp.tanggal) + '-' +datename(year,isp.tanggal) as dateTIme,
+		m.name as media,
+		isp.issue,
+		t.name as Tone,
+		uc.name as Industry,
+		ucb.name as Corporate,
+		isp.narasumber_1 as QuotePerson1,
+		isp.narasumber_2 as QuotePerson2,
+		c.name + '-'+ ucb.name as Comparsion,
+		isp.tanggal
+		from input_summary isp
+		left join user_company uc on isp.user_company_id = uc.id
+		left join user_company_branch ucb on isp.user_company_branch_id = ucb.id
+		left join user_division ud on isp.user_division_id  = ud.id
+		left join category c on isp.category = c.id
+		left join tone t on isp.tone= t.id
+		left join media m on isp.media = m.id
+		left join user_info_client isc on isp.user_client =isc.id
+		left join user_info ui on isc.user_info_id = ui.id
+		where 
+			isp.status='Publish' 
+			and year(isp.tanggal) = 2014
+			and MONTH(isp.tanggal) =12 
+	group by 
+		no,
+		datename(DAY,isp.tanggal) + '-' + datename(MONTH,isp.tanggal) + '-' +datename(year,isp.tanggal),
+		m.name ,
+		isp.issue,
+		t.name ,
+		uc.name ,
+		ucb.name ,
+		isp.narasumber_1 ,
+		isp.narasumber_2 ,
+		c.name + '-'+ ucb.name ,
+		isp.tanggal
+	order by 
+		isp.tanggal
